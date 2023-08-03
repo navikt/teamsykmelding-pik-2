@@ -1,8 +1,6 @@
 name: build and deploy
 on:
-  push:
-    branches:
-      - main
+  push
 
 jobs:
   test:
@@ -45,6 +43,7 @@ jobs:
           RESOURCE: naiserator-dev.yaml
           VAR: image=${{ needs.build.outputs.image }}
   deploy-prod:
+    if: github.ref_name == 'main'
     name: Deploy to prod-gcp
     runs-on: ubuntu-latest
     needs: [test, build]
