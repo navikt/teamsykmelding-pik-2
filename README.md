@@ -40,18 +40,22 @@ Creating a docker image should be as simple as
 docker build -t rustapp .
 ```
 
+#### Running a docker image
+``` bash
+docker run --rm -it -p 8080:8080 rustapp
+```
+
 ##### 🧪 Testing the applications endpoints
 
 Request to is_alive
 ```bash script
-curl --location --request GET 'http://0.0.0.0:8080/internal/is_alive' '
+curl --location --request GET 'http://0.0.0.0:8080/internal/is_alive'
 ```
 
 Request to is_alive
 ```bash script
-curl --location --request GET 'http://0.0.0.0:8080/internal/is_ready' '
+curl --location --request GET 'http://0.0.0.0:8080/internal/is_ready'
 ```
-
 
 ### Contact
 
