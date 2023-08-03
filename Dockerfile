@@ -16,5 +16,6 @@ FROM debian:buster-slim
 WORKDIR /usr/local/bin
 
 COPY --from=builder /app/target/release/teamsykmelding-pik-2 .
+EXPOSE 8080
 
 CMD ["./teamsykmelding-pik-2"]
