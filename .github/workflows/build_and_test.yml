@@ -31,7 +31,6 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release --all-features
       - name: docker-build-push
         uses: nais/docker-build-push@v0
         id: docker-build-push
