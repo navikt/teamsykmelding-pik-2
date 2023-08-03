@@ -32,6 +32,26 @@ Build the code and run all the tests
 cargo test
 ```
 
+#### Running the application locally
+
+#####  Create docker image of app
+Creating a docker image should be as simple as
+``` bash
+docker build -t rustapp .
+```
+
+##### 🧪 Testing the applications endpoints
+
+Request to is_alive
+```bash script
+curl --location --request GET 'http://localhost:8080/internal/is_alive' '
+```
+
+Request to is_alive
+```bash script
+curl --location --request GET 'http://localhost:8080/internal/is_ready' '
+```
+
 
 ### Contact
 

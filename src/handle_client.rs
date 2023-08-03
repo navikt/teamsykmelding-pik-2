@@ -17,7 +17,7 @@ pub fn handle_client(mut stream: TcpStream, application_state: ApplicationState)
             request.push_str(String::from_utf8_lossy(&buffer[..size]).as_ref());
 
             let (status_line, content) = match &*request {
-                r if r.starts_with("GET /internal/is_alive/") => handle_get_is_alive_request(application_state),
+                r if r.starts_with("GET /internal/is_alive") => handle_get_is_alive_request(application_state),
                 r if r.starts_with("GET /internal/is_ready") => handle_get_is_ready_request(application_state),
                 _ => (NOT_FOUND.to_string(), "404 not found".to_string()),
             };
