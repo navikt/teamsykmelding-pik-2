@@ -23,9 +23,6 @@ jobs:
       packages: "write"
       contents: "read"
       id-token: "write"
-    outputs:
-      description: "Docker image in GAR"
-      image: ${{ steps.build-and-publish.outputs.image }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
@@ -35,13 +32,15 @@ jobs:
         with:
           command: build
           args: --release --all-features
-      - name: Push docker image to GAR
+      - name: docker-build-push
         uses: nais/docker-build-push@v0
         id: docker-build-push
         with:
           team: teamsykmelding
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+    outputs:
+      image: ${{ steps.docker-build-push.outputs.image }}
   deploy-dev:
     name: Deploy to dev-gcp
     runs-on: ubuntu-latest
