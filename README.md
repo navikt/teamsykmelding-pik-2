@@ -4,6 +4,7 @@ This project contains the application code and infrastructure for teamsykmelding
 ## Technologies used
 * Rust
 * Cargo
+* Docker
 
 
 ### Prerequisites
