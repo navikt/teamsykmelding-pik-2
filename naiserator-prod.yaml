@@ -22,10 +22,10 @@ spec:
     path: /internal/is_ready
     initialDelay: 30
     periodSeconds: 5
-    timeout: 1
+    timeout: 5
   resources:
     limits:
-      memory: 350Mi
+      memory: 1Gi
     requests:
-      cpu: 10m
-      memory: 100Mi
+      cpu: 50m
+      memory: 256Mi
