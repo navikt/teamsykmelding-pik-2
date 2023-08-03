@@ -1,5 +1,5 @@
 # teamsykmelding-pik-2
-This project contains the application code and infrastructure for teamsykmelding-pik-2
+This project contains the application code and infrastructure for teamsykmelding-pik-2 based on this kotlin project https://github.com/navikt/teamsykmelding-pik
 
 ## Technologies used
 * Rust
