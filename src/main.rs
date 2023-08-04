@@ -39,14 +39,14 @@ fn main() {
     }
 
     // setup ssl config for kafka aiven
-    let kafka_brokers = environment_variables.kafka_brokers.to_string();
-    let kafka_certificate_path = environment_variables.kafka_certificate_path.to_string();
-    let kafka_private_key_path = environment_variables.kafka_private_key_path.to_string();
-    let kafka_ca_path = environment_variables.kafka_ca_path.to_string();
+    let kafka_brokers: String = environment_variables.kafka_brokers.to_string();
+    let kafka_certificate_path: String = environment_variables.kafka_certificate_path.to_string();
+    let kafka_private_key_path: String = environment_variables.kafka_private_key_path.to_string();
+    let kafka_ca_path: String = environment_variables.kafka_ca_path.to_string();
 
-    let certificate_file = File::open(kafka_certificate_path);
-    let private_key_file = File::open(kafka_private_key_path);
-    let ca_file = File::open(kafka_ca_path);
+    let certificate_file: File = File::open(kafka_certificate_path).unwrap();
+    let private_key_file: File = File::open(kafka_private_key_path).unwrap();
+    let ca_file: File = File::open(kafka_ca_path).unwrap();
 
     let mut ssl_connector_builder = SslConnector::builder(SslMethod::tls()).unwrap();
     ssl_connector_builder.set_cipher_list("DEFAULT").unwrap();
@@ -64,7 +64,7 @@ fn main() {
 
     let kafka_client: KafkaClient = KafkaClient::new_secure(
         vec!(kafka_brokers.to_owned(), &[0, 1], ),
-        (SecurityConfig::new(ssl_connector).with_hostname_verification(true)));
+        (SecurityConfig::new(ssl_connector).with_hostname_verification(true)).unwrap());
 
     // kafka config
     let intern_pik_topic = environment_variables.intern_pik_topic.to_string();
