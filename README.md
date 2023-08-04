@@ -32,6 +32,17 @@ Build the code and run all the tests
 cargo test
 ```
 
+# Ubuntu deps need to run it locally
+Rember to install:
+pkg-config
+```bash script
+apt install pkg-config
+```
+and libssl-dev
+```bash script
+apt libssl-dev
+```
+
 #### Running the application locally
 
 #####  Create docker image of app

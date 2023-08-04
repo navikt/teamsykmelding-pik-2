@@ -1,8 +1,8 @@
 mod handle_client;
 mod environment_variables;
 
-use std::fs::File;
 use std::net::{TcpListener};
+use std::path::Path;
 use std::string::ToString;
 use kafka::client::{KafkaClient, SecurityConfig};
 use serde_derive::{Deserialize, Serialize};
@@ -39,32 +39,29 @@ fn main() {
     }
 
     // setup ssl config for kafka aiven
-    let kafka_brokers: String = environment_variables.kafka_brokers.to_string();
-    let kafka_certificate_path: String = environment_variables.kafka_certificate_path.to_string();
-    let kafka_private_key_path: String = environment_variables.kafka_private_key_path.to_string();
-    let kafka_ca_path: String = environment_variables.kafka_ca_path.to_string();
+    let kafka_brokers: String = environment_variables.kafka_brokers;
+    let kafka_certificate_path: String = environment_variables.kafka_certificate_path;
+    let kafka_private_key_path: String = environment_variables.kafka_private_key_path;
+    let kafka_ca_path: String = environment_variables.kafka_ca_path;
 
-    let certificate_file: File = File::open(kafka_certificate_path).unwrap();
-    let private_key_file: File = File::open(kafka_private_key_path).unwrap();
-    let ca_file: File = File::open(kafka_ca_path).unwrap();
 
     let mut ssl_connector_builder = SslConnector::builder(SslMethod::tls()).unwrap();
     ssl_connector_builder.set_cipher_list("DEFAULT").unwrap();
-    ssl_connector_builder.set_verify(SslVerifyMode::PEER).unwrap();
+    ssl_connector_builder.set_verify(SslVerifyMode::PEER);
     ssl_connector_builder
-        .set_certificate_file(certificate_file, SslFiletype::PEM)
+        .set_certificate_file(Path::new(kafka_certificate_path.as_str()) , SslFiletype::PEM)
         .unwrap();
     ssl_connector_builder
-        .set_private_key_file(private_key_file, SslFiletype::PEM)
+        .set_private_key_file(Path::new(kafka_private_key_path.as_str()), SslFiletype::PEM)
         .unwrap();
-    ssl_connector_builder.set_ca_file(ca_file).unwrap();
+    ssl_connector_builder.set_ca_file(Path::new(kafka_ca_path.as_str())).unwrap();
 
 
     let ssl_connector = ssl_connector_builder.build();
 
     let kafka_client: KafkaClient = KafkaClient::new_secure(
-        vec!(kafka_brokers.to_owned(), &[0, 1], ),
-        (SecurityConfig::new(ssl_connector).with_hostname_verification(true)).unwrap());
+        vec!(kafka_brokers),
+        SecurityConfig::new(ssl_connector).with_hostname_verification(true));
 
     // kafka config
     let intern_pik_topic = environment_variables.intern_pik_topic.to_string();
@@ -82,11 +79,11 @@ fn main() {
             .unwrap();
 
     loop {
-        for messageSet in kafka_consumer.poll().unwrap().iter() {
-            for message in messageSet.messages() {
+        for message_set in kafka_consumer.poll().unwrap().iter() {
+            for message in message_set.messages() {
                 println!("{:?}", message);
             }
-            kafka_consumer.consume_messageset(messageSet).expect("panic message");
+            kafka_consumer.consume_messageset(message_set).expect("panic message");
         }
         kafka_consumer.commit_consumed().unwrap();
     }
