@@ -18,6 +18,8 @@ FROM debian:buster-slim
 
 WORKDIR /usr/local/bin
 
+RUN ln -s libssl.so libssl.so.1.1
+
 COPY --from=builder /app/target/release/teamsykmelding-pik-2 .
 EXPOSE 8080
 
