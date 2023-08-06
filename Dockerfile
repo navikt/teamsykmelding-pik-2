@@ -1,9 +1,6 @@
 # Build stage
 FROM rust:1.71.1-buster as builder
 
-RUN apt-get update -y && \
-  apt-get install -y pkg-config make g++ libssl-dev openssl
-
 WORKDIR /app
 
 # Copy the source code
@@ -14,7 +11,7 @@ RUN cargo build --release
 
 
 # Production stage
-FROM debian:buster-slim
+FROM gcr.io/distroless/cc-debian11
 
 WORKDIR /usr/local/bin
 
