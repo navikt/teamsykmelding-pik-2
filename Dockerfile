@@ -2,7 +2,7 @@
 FROM rust:1.71.1-buster as builder
 
 RUN apt-get update -y && \
-  apt-get install -y pkg-config make g++ libssl-dev
+  apt-get install -y pkg-config make g++ libssl-dev openssl
 
 WORKDIR /app
 
@@ -17,8 +17,6 @@ RUN cargo build --release
 FROM debian:buster-slim
 
 WORKDIR /usr/local/bin
-
-RUN ln -s libssl.so libssl.so.1.1
 
 COPY --from=builder /app/target/release/teamsykmelding-pik-2 .
 EXPOSE 8080
