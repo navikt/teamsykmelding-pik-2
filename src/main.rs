@@ -3,7 +3,6 @@ mod environment_variables;
 
 use std::net::{TcpListener};
 use std::path::Path;
-use std::string::ToString;
 use kafka::client::{KafkaClient, SecurityConfig};
 use serde_derive::{Deserialize, Serialize};
 use crate::environment_variables::get_environment_variables;
@@ -15,11 +14,9 @@ use openssl::ssl::{SslConnector, SslFiletype, SslMethod, SslVerifyMode};
 fn main() {
     //start server and print port
     let listener = TcpListener::bind(format!("0.0.0.0:8080")).unwrap();
-    println!("Server listening on port 8080");
 
     let environment_variables = get_environment_variables();
 
-    println!("cluster_name is : {}", environment_variables.cluster_name.to_string());
 
 
     let application_state = ApplicationState {
@@ -64,17 +61,17 @@ fn main() {
         SecurityConfig::new(ssl_connector).with_hostname_verification(true));
 
     // kafka config
-    let intern_pik_topic = environment_variables.intern_pik_topic.to_string();
-    let kafka_hostname = environment_variables.kafka_hostname.to_string() + "-paragraf-i-kode";
-    let application_name = environment_variables.application_name.to_string();
+    let intern_pik_topic = environment_variables.intern_pik_topic;
+    let kafka_client_id = environment_variables.hostname + "-paragraf-i-kode";
+    let application_name = environment_variables.application_name;
 
     // start to consume kafka messeges
     let mut kafka_consumer =
         Consumer::from_client(kafka_client)
             .with_fallback_offset(FetchOffset::Latest)
-            .with_topic_partitions(intern_pik_topic.to_owned(), &[0, 1])
+            .with_topic(intern_pik_topic.to_owned())
             .with_group(application_name.to_owned())
-            .with_client_id(kafka_hostname)
+            .with_client_id(kafka_client_id)
             .create()
             .unwrap();
 
@@ -84,6 +81,7 @@ fn main() {
                 println!("{:?}", message);
             }
             kafka_consumer.consume_messageset(message_set).expect("panic message");
+            println!("message is consumed");
         }
         kafka_consumer.commit_consumed().unwrap();
     }
