@@ -7,7 +7,7 @@ use kafka::client::{KafkaClient, SecurityConfig};
 use serde_derive::{Deserialize, Serialize};
 use crate::environment_variables::get_environment_variables;
 use crate::handle_client::handle_client;
-use kafka::consumer::{Consumer, FetchOffset};
+use kafka::consumer::{Consumer, FetchOffset, GroupOffsetStorage};
 use openssl::ssl::{SslConnector, SslFiletype, SslMethod, SslVerifyMode};
 
 
@@ -72,15 +72,18 @@ fn main() {
             .with_topic(intern_pik_topic.to_owned())
             .with_group(application_name.to_owned())
             .with_client_id(kafka_client_id)
+            .with_offset_storage(GroupOffsetStorage::Kafka)
             .create()
             .unwrap();
+
+    println!("made it to kafka consumer loop");
 
     loop {
         for message_set in kafka_consumer.poll().unwrap().iter() {
             for message in message_set.messages() {
                 println!("{:?}", message);
             }
-            kafka_consumer.consume_messageset(message_set).expect("panic message");
+            kafka_consumer.consume_messageset(message_set).unwrap();
             println!("message is consumed");
         }
         kafka_consumer.commit_consumed().unwrap();
