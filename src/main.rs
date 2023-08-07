@@ -35,6 +35,8 @@ fn main() {
         }
     }
 
+    println!("Staring to setup kafka config");
+
     // setup ssl config for kafka aiven
     let kafka_brokers: String = environment_variables.kafka_brokers;
     let kafka_certificate_path: String = environment_variables.kafka_certificate_path;
