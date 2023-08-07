@@ -65,6 +65,8 @@ fn main() {
     let kafka_client_id = environment_variables.hostname + "-paragraf-i-kode";
     let application_name = environment_variables.application_name;
 
+    println!("made it passed kafka config");
+
     // start to consume kafka messeges
     let mut kafka_consumer =
         Consumer::from_client(kafka_client)
