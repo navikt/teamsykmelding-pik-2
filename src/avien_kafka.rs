@@ -32,7 +32,7 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         .create()
         .expect("Consumer creation error");
 
-    kafka_consumer.subscribe(intern_pik_topic).expect("TODO: panic message");
+    kafka_consumer.subscribe(intern_pik_topic.as_ref()).expect("TODO: panic message");
 
     println!("made it passed kafka config");
 
