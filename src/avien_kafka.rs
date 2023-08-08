@@ -7,7 +7,7 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
 
 
     // kafka config
-    let intern_pik_topic: [&str; 1] = [environment_variables.intern_pik_topi];
+    let intern_pik_topic: [&str; 1] = [environment_variables.intern_pik_topic];
     let kafka_client_id = environment_variables.hostname + "-paragraf-i-kode";
     let application_name = environment_variables.application_name;
 
