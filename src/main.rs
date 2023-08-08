@@ -1,16 +1,15 @@
-mod handle_client;
 mod environment_variables;
-mod tcp_listener;
 mod avien_kafka;
+mod nais_api;
 
 
 use serde_derive::{Deserialize, Serialize};
 use crate::avien_kafka::avien_kafka;
 use crate::environment_variables::get_environment_variables;
-use crate::tcp_listener::start_tcp_listener;
+use crate::nais_api::register_nais_api;
 
-
-fn main() {
+#[tokio::main]
+async fn main() {
     let environment_variables = get_environment_variables();
 
     let application_state = ApplicationState {
@@ -18,9 +17,9 @@ fn main() {
         ready: true,
     };
 
-    start_tcp_listener(application_state);
+    register_nais_api(application_state).await;
 
-    println!("Made it past tcp listeneres");
+    println!("Made it past nais api");
 
     avien_kafka(environment_variables)
 }
