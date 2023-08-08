@@ -7,7 +7,7 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
 
 
     // kafka config
-    let intern_pik_topic = environment_variables.intern_pik_topic;
+    let intern_pik_topic: [&str; 1] = [environment_variables.intern_pik_topi];
     let kafka_client_id = environment_variables.hostname + "-paragraf-i-kode";
     let application_name = environment_variables.application_name;
 
@@ -32,7 +32,7 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         .create()
         .expect("Consumer creation error");
 
-    kafka_consumer.subscribe(intern_pik_topic).expect("TODO: panic message");
+    kafka_consumer.subscribe(intern_pik_topic.to_).expect("TODO: panic message");
 
     println!("made it passed kafka config");
 
