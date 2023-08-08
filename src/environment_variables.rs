@@ -14,7 +14,7 @@ pub fn get_environment_variables() -> EnvironmentVariables {
     let hostname: String = env::var("HOSTNAME").unwrap_or("environment variable HOSTNAME is missing".to_string());
 
     return EnvironmentVariables {
-        intern_pik_topic: INTERN_PIK_TOPIC.to_string(),
+        intern_pik_topic: INTERN_PIK_TOPIC,
         etterlevelse_topic: ETTERLEVELSE_TOPIC.to_string(),
         cluster_name,
         application_name,
@@ -28,7 +28,7 @@ pub fn get_environment_variables() -> EnvironmentVariables {
 
 #[derive(Serialize, Deserialize)]
 pub struct EnvironmentVariables {
-    pub(crate) intern_pik_topic: String,
+    pub(crate) intern_pik_topic: &'static str,
     pub(crate) etterlevelse_topic: String,
     pub(crate) cluster_name: String,
     pub(crate) application_name: String,
