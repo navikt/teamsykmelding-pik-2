@@ -2,8 +2,7 @@
 FROM rust:1.71.1-buster as builder
 
 RUN apt-get update \
-    && apt-get install -y ca-certificates tzdata \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y zlib1g:i386
     
 WORKDIR /app
 
