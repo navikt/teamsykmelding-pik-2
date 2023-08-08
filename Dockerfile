@@ -2,7 +2,7 @@
 FROM rust:1.71.1-buster as builder
 
 RUN apt-get update \
-    && apt-get install -y pkg-config make g++ libssl-dev libz
+    && apt-get install -y pkg-config make g++ libssl-dev libz zlib1g-dev
     
 WORKDIR /app
 
