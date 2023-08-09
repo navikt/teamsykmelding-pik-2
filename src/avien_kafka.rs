@@ -1,10 +1,11 @@
-use rdkafka::ClientConfig;
+use std::collections::HashMap;
+use rdkafka::{ClientConfig, Message};
 use rdkafka::consumer::{BaseConsumer, Consumer};
+use serde_derive::{Deserialize, Serialize};
 use crate::environment_variables::EnvironmentVariables;
 
 pub fn avien_kafka(environment_variables: EnvironmentVariables) {
     println!("Staring to setup kafka config");
-
 
     // kafka config
     let intern_pik_topic: [&str; 1] = [environment_variables.intern_pik_topic];
@@ -32,13 +33,66 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         .create()
         .expect("Consumer creation error");
 
-    kafka_consumer.subscribe(intern_pik_topic.as_ref()).expect("TODO: panic message");
+    kafka_consumer.subscribe(intern_pik_topic.as_ref()).expect("topic subscribe failed");
 
     println!("made it passed kafka config");
 
     loop {
-        let message = kafka_consumer.poll(None);
-        println!("{:?}", message);
+        for msg_result in kafka_consumer.iter() {
+            let msg = msg_result.unwrap();
+            let payload = msg.payload().unwrap();
+            let juridisk_vurdering_result: JuridiskVurderingResult =
+                serde_json::from_slice(payload).expect("failed to derser JSON to JuridiskVurderingResult");
+            println!("juridisk_vurdering_result is: {:?}", juridisk_vurdering_result)
+        }
     }
+}
 
+#[derive(Serialize, Deserialize, Debug)]
+#[allow(non_snake_case)]
+pub struct JuridiskVurderingResult {
+    pub(crate) juridiskeVurderinger: Vec<JuridiskVurdering>,
+}
+
+
+#[derive(Serialize, Deserialize, Debug)]
+#[allow(non_snake_case)]
+pub struct JuridiskVurdering {
+    pub(crate) id: String,
+    pub(crate) eventName: String,
+    pub(crate) version: String,
+    pub(crate) kilde: String,
+    pub(crate) versjonAvKode: String,
+    pub(crate) fodselsnummer: String,
+    pub(crate) juridiskHenvisning: JuridiskHenvisning,
+    pub(crate) sporing: HashMap<String, String>,
+    pub(crate) input: HashMap<String, String>,
+    pub(crate) tidsstempel: Option<String>,
+    pub(crate) utfall: JuridiskUtfall,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[allow(non_snake_case)]
+pub struct JuridiskHenvisning {
+    pub(crate) lovverk: Lovverk,
+    pub(crate) paragraf: String,
+    pub(crate) ledd: Option<u32>,
+    pub(crate) punktum: Option<u32>,
+    pub(crate) bokstav: Option<String>
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[allow(non_camel_case_types)]
+pub enum JuridiskUtfall {
+    VILKAR_OPPFYLT,
+    VILKAR_IKKE_OPPFYLT,
+    VILKAR_UAVKLART,
+    VILKAR_BEREGNET
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[allow(non_camel_case_types)]
+pub enum Lovverk {
+    FOLKETRYGDLOVEN,
+    FORVALTNINGSLOVEN
 }
