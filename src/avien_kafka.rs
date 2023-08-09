@@ -20,10 +20,9 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
 
     let kafka_consumer: BaseConsumer = ClientConfig::new()
         .set("bootstrap.servers", kafka_brokers)
-        .set("group.id", application_name)
+        .set("group.id", application_name +"-consumer")
         .set("client.id", kafka_client_id)
         .set("session.timeout.ms", "6000")
-        .set("enable.auto.commit", "true")
         .set("security.protocol", "SSL")
         .set("auto.offset.reset", "earliest")
         .set("acks", "all")
