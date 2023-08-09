@@ -41,10 +41,12 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         for msg_result in kafka_consumer.iter() {
             let msg = msg_result.unwrap();
             let payload = msg.payload().unwrap();
-            println!("found a kafka message, tring to derser it now");
+            println!("found a kafka message, tring to derser it now payload: {:?}", payload);
+            /*
             let juridisk_vurdering_result: JuridiskVurderingResult =
                 serde_json::from_slice(payload).expect("failed to derser JSON to JuridiskVurderingResult");
             println!("juridisk_vurdering_result is: {:?}", juridisk_vurdering_result)
+            */
         }
     }
 }
@@ -79,7 +81,7 @@ pub struct JuridiskHenvisning {
     pub(crate) paragraf: String,
     pub(crate) ledd: Option<u32>,
     pub(crate) punktum: Option<u32>,
-    pub(crate) bokstav: Option<String>
+    pub(crate) bokstav: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -88,12 +90,12 @@ pub enum JuridiskUtfall {
     VILKAR_OPPFYLT,
     VILKAR_IKKE_OPPFYLT,
     VILKAR_UAVKLART,
-    VILKAR_BEREGNET
+    VILKAR_BEREGNET,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[allow(non_camel_case_types)]
 pub enum Lovverk {
     FOLKETRYGDLOVEN,
-    FORVALTNINGSLOVEN
+    FORVALTNINGSLOVEN,
 }
