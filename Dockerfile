@@ -1,23 +1,17 @@
-# Build stage
-FROM rust:1.71.1-buster as builder
+# Use a rust image with the latest version of Rust installed
+FROM rust:1.71.1-bullseye
 
-RUN apt-get update \
-    && apt-get install -y pkg-config make g++ libssl-dev openssl libudev-dev zlib1g-dev lib64z1 
-    
+# Set the working directory in the container
 WORKDIR /app
 
 # Copy the source code
 COPY . .
 
-# Build the application
+# Build the Rust application
 RUN cargo build --release
 
-# Production stage
-FROM gcr.io/distroless/cc-debian11
-
-WORKDIR /usr/local/bin
-
-COPY --from=builder /app/target/release/teamsykmelding-pik-2 .
+# Expose port 8080 in the container
 EXPOSE 8080
 
-CMD ["./teamsykmelding-pik-2"]
+# Specify the command to run when the container starts
+CMD ["./target/release/teamsykmelding-pik-2"]

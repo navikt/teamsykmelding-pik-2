@@ -40,7 +40,7 @@ apt install pkg-config
 ```
 and libssl-dev
 ```bash script
-apt libssl-dev
+apt install libssl-dev
 ```
 
 #### Running the application locally
