@@ -32,8 +32,8 @@ Build the code and run all the tests
 cargo test
 ```
 
-# Ubuntu deps need to run it locally
-Rember to install:
+# Ubuntu deps needed to run locally
+Remember to install:
 pkg-config
 ```bash script
 apt install pkg-config
