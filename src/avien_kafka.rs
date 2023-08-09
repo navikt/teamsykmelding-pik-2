@@ -41,6 +41,7 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         for msg_result in kafka_consumer.iter() {
             let msg = msg_result.unwrap();
             let payload = msg.payload().unwrap();
+            println!("found a kafka message, tring to derser it now");
             let juridisk_vurdering_result: JuridiskVurderingResult =
                 serde_json::from_slice(payload).expect("failed to derser JSON to JuridiskVurderingResult");
             println!("juridisk_vurdering_result is: {:?}", juridisk_vurdering_result)

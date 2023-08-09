@@ -21,7 +21,7 @@ async fn main() {
 
     println!("Made it past nais api");
 
-    avien_kafka(environment_variables)
+    avien_kafka(environment_variables);
 }
 
 #[derive(Serialize, Deserialize, Clone, Copy)]
