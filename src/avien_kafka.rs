@@ -1,5 +1,4 @@
-use std::any::Any;
-use std::iter::Map;
+use std::collections::HashMap;
 use rdkafka::{ClientConfig, Message};
 use rdkafka::consumer::{BaseConsumer, Consumer};
 use serde_derive::{Deserialize, Serialize};
@@ -69,8 +68,8 @@ pub struct JuridiskVurdering {
     pub(crate) versjonAvKode: String,
     pub(crate) fodselsnummer: String,
     pub(crate) juridiskHenvisning: JuridiskHenvisning,
-    pub(crate) sporing: Map<String, String>,
-    pub(crate) input: Map<String, dyn Any>,
+    pub(crate) sporing: HashMap<String, String>,
+    pub(crate) input: HashMap<String, Vec<f64>>,
     pub(crate) tidsstempel: Option<String>,
     pub(crate) utfall: JuridiskUtfall,
 }
