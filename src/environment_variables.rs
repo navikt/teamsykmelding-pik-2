@@ -15,8 +15,8 @@ pub fn get_environment_variables() -> EnvironmentVariables {
 
     return EnvironmentVariables {
         intern_pik_topic: INTERN_PIK_TOPIC,
-        etterlevelse_topic: ETTERLEVELSE_TOPIC.to_string(),
-        cluster_name,
+        etterlevelse_topic: ETTERLEVELSE_TOPIC,
+        cluster_name ,
         application_name,
         kafka_brokers,
         kafka_certificate_path,
@@ -29,7 +29,7 @@ pub fn get_environment_variables() -> EnvironmentVariables {
 #[derive(Serialize, Deserialize)]
 pub struct EnvironmentVariables {
     pub(crate) intern_pik_topic: &'static str,
-    pub(crate) etterlevelse_topic: String,
+    pub(crate) etterlevelse_topic: &'static str,
     pub(crate) cluster_name: String,
     pub(crate) application_name: String,
     pub(crate) kafka_brokers: String,
