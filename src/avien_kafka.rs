@@ -43,6 +43,7 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         let payload = msg.payload().unwrap();
 
         let payload_json_string = std::str::from_utf8(payload).unwrap();
+        println!("payload_json_string is: {}", payload_json_string);
 
         let juridisk_vurdering_result: JuridiskVurderingResult = serde_json::from_str(payload_json_string).unwrap();
 
@@ -51,6 +52,10 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         kafka_consumer.commit_message(&msg, rdkafka::consumer::CommitMode::Sync).unwrap();
     }
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+#[allow(non_snake_case)]
+pub struct Any<>;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[allow(non_snake_case)]
@@ -69,7 +74,7 @@ pub struct JuridiskVurdering {
     pub(crate) fodselsnummer: String,
     pub(crate) juridiskHenvisning: JuridiskHenvisning,
     pub(crate) sporing: HashMap<String, String>,
-    pub(crate) input: HashMap<String, Vec<f64>>,
+    pub(crate) input: HashMap<String, Any>,
     pub(crate) tidsstempel: Option<String>,
     pub(crate) utfall: JuridiskUtfall,
 }
