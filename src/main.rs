@@ -7,6 +7,7 @@ use serde_derive::{Deserialize, Serialize};
 use crate::avien_kafka::avien_kafka;
 use crate::environment_variables::get_environment_variables;
 use crate::nais_api::register_nais_api;
+use tokio::task;
 
 #[tokio::main]
 async fn main() {
@@ -17,7 +18,8 @@ async fn main() {
         ready: true,
     };
 
-    register_nais_api(application_state).await;
+    task::spawn(register_nais_api(application_state));
+    println!("Server has started");
 
     avien_kafka(environment_variables);
 }

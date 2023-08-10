@@ -12,9 +12,9 @@ pub async fn register_nais_api(application_state: ApplicationState) {
 
     println!("Server is starting up");
     axum::Server::bind(&"0.0.0.0:8080".parse().unwrap())
-        .serve(app.into_make_service());
-
-    println!("Server is ready to receive requests");
+        .serve(app.into_make_service())
+        .await
+        .unwrap();
 }
 
 
