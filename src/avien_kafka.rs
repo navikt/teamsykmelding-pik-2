@@ -25,7 +25,6 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         .set("session.timeout.ms", "6000")
         .set("security.protocol", "ssl")
         .set("auto.offset.reset", "earliest")
-        .set("acks", "all")
         .set("ssl.key.location", kafka_private_key_path)
         .set("ssl.certificate.location", kafka_certificate_path)
         .set("ssl.ca.location", kafka_ca_path)

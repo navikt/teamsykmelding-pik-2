@@ -5,7 +5,7 @@ const INTERN_PIK_TOPIC: &str = "teamsykmelding.paragraf-i-kode";
 const ETTERLEVELSE_TOPIC: &str = "flex.omrade-helse-etterlevelse";
 
 pub fn get_environment_variables() -> EnvironmentVariables {
-    let cluster_name: String = env::var("NAIS_CLUSTER_NAME").unwrap_or("localhost".to_string());
+    let cluster_name: String = env::var("NAIS_CLUSTER_NAME").unwrap_or("environment variable NAIS_CLUSTER_NAME is missing".to_string());
     let application_name: String = env::var("NAIS_APP_NAME").unwrap_or("environment variable NAIS_APP_NAME is missing".to_string());
     let kafka_brokers: String = env::var("KAFKA_BROKERS").unwrap_or("environment variable KAFKA_BROKERS is missing".to_string());
     let kafka_certificate_path: String = env::var("KAFKA_CERTIFICATE_PATH").unwrap_or("environment variable KAFKA_CERTIFICATE_PATH is missing".to_string());

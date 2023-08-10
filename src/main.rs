@@ -19,8 +19,6 @@ async fn main() {
 
     register_nais_api(application_state).await;
 
-    println!("Made it past nais api");
-
     avien_kafka(environment_variables);
 }
 
