@@ -20,7 +20,7 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
 
     let kafka_consumer: BaseConsumer = ClientConfig::new()
         .set("bootstrap.servers", kafka_brokers)
-        .set("group.id", application_name +"-consumer")
+        .set("group.id", application_name + "-consumer")
         .set("client.id", kafka_client_id)
         .set("session.timeout.ms", "6000")
         .set("security.protocol", "ssl")
@@ -36,16 +36,16 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
     println!("made it passed kafka config");
 
     loop {
-        for msg_result in kafka_consumer.iter() {
-            let msg = msg_result.unwrap();
-            let payload = msg.payload().unwrap();
-            println!("found a kafka message, tring to derser it now payload: {:?}", payload);
-            /*
-            let juridisk_vurdering_result: JuridiskVurderingResult =
-                serde_json::from_slice(payload).expect("failed to derser JSON to JuridiskVurderingResult");
-            println!("juridisk_vurdering_result is: {:?}", juridisk_vurdering_result)
-            */
-        }
+        let msg_result = kafka_consumer.poll(None).unwrap();
+
+        let msg = msg_result.unwrap();
+        let payload = msg.payload().unwrap();
+        println!("found a kafka message, tring to derser it now payload: {:?}", payload);
+        /*
+        let juridisk_vurdering_result: JuridiskVurderingResult =
+            serde_json::from_slice(payload).expect("failed to derser JSON to JuridiskVurderingResult");
+        println!("juridisk_vurdering_result is: {:?}", juridisk_vurdering_result)
+        */
     }
 }
 

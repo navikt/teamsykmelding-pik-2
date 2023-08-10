@@ -2,19 +2,16 @@ use axum::{
     routing::get,
     http::StatusCode, Router,
 };
-use std::net::SocketAddr;
 
 use crate::ApplicationState;
 
-pub async fn register_nais_api(application_state: ApplicationState)  {
+pub async fn register_nais_api(application_state: ApplicationState) {
     let app = Router::new()
         .route("/internal/is_alive", get(is_alive(application_state)))
         .route("/internal/is_ready", get(is_ready(application_state)));
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
-
     println!("Server is starting up");
-    axum::Server::bind(&addr)
+    axum::Server::bind(&"0.0.0.0:8080".parse().unwrap())
         .serve(app.into_make_service());
 
     println!("Server is ready to receive requests");
