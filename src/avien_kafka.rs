@@ -23,15 +23,16 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         .set("group.id", application_name + "-consumer")
         .set("client.id", kafka_client_id)
         .set("session.timeout.ms", "6000")
-        .set("security.protocol", "ssl")
         .set("auto.offset.reset", "earliest")
+        .set("enable.auto.commit", "false")
+        .set("security.protocol", "ssl")
         .set("ssl.key.location", kafka_private_key_path)
         .set("ssl.certificate.location", kafka_certificate_path)
         .set("ssl.ca.location", kafka_ca_path)
         .create()
-        .expect("Consumer creation error");
+        .expect("Failed to create Kafka consumer");
 
-    kafka_consumer.subscribe(intern_pik_topic.as_ref()).expect("topic subscribe failed");
+    kafka_consumer.subscribe(intern_pik_topic.as_ref()).expect("We could not subscribe to the defined topic.");
 
     println!("made it passed kafka config");
 
@@ -41,10 +42,15 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         let msg = msg_result.unwrap();
         let payload = msg.payload().unwrap();
         println!("found a kafka message, tring to derser");
+        println!("Message read: {}", std::str::from_utf8(payload).unwrap());
+        kafka_consumer.commit_message(&msg, rdkafka::consumer::CommitMode::Sync).unwrap();
 
+        /* TODO
         let juridisk_vurdering_result: JuridiskVurderingResult =
             serde_json::from_slice(payload).expect("failed to derser JSON to JuridiskVurderingResult");
         println!("juridisk_vurdering_result is: {:?}", juridisk_vurdering_result)
+
+         */
     }
 }
 
@@ -53,7 +59,6 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
 pub struct JuridiskVurderingResult {
     pub(crate) juridiskeVurderinger: Vec<JuridiskVurdering>,
 }
-
 
 #[derive(Serialize, Deserialize, Debug)]
 #[allow(non_snake_case)]
