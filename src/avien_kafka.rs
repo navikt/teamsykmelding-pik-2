@@ -40,12 +40,11 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
 
         let msg = msg_result.unwrap();
         let payload = msg.payload().unwrap();
-        println!("found a kafka message, tring to derser it now payload: {:?}", payload);
-        /*
+        println!("found a kafka message, tring to derser");
+
         let juridisk_vurdering_result: JuridiskVurderingResult =
             serde_json::from_slice(payload).expect("failed to derser JSON to JuridiskVurderingResult");
         println!("juridisk_vurdering_result is: {:?}", juridisk_vurdering_result)
-        */
     }
 }
 
