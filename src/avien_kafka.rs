@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use rdkafka::{ClientConfig, Message};
 use rdkafka::consumer::{BaseConsumer, Consumer};
 use serde_derive::{Deserialize, Serialize};
+use serde_json::Value;
 use crate::environment_variables::EnvironmentVariables;
 
 pub fn avien_kafka(environment_variables: EnvironmentVariables) {
@@ -55,10 +56,6 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
 
 #[derive(Serialize, Deserialize, Debug)]
 #[allow(non_snake_case)]
-pub struct Any<>;
-
-#[derive(Serialize, Deserialize, Debug)]
-#[allow(non_snake_case)]
 pub struct JuridiskVurderingResult {
     pub(crate) juridiskeVurderinger: Vec<JuridiskVurdering>,
 }
@@ -74,7 +71,7 @@ pub struct JuridiskVurdering {
     pub(crate) fodselsnummer: String,
     pub(crate) juridiskHenvisning: JuridiskHenvisning,
     pub(crate) sporing: HashMap<String, String>,
-    pub(crate) input: HashMap<String, Any>,
+    pub(crate) input: HashMap<String, Value>,
     pub(crate) tidsstempel: Option<String>,
     pub(crate) utfall: JuridiskUtfall,
 }
