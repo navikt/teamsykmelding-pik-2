@@ -41,16 +41,14 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
 
         let msg = msg_result.unwrap();
         let payload = msg.payload().unwrap();
-        println!("found a kafka message, tring to derser");
-        println!("Message read: {}", std::str::from_utf8(payload).unwrap());
+
+        let payload_json_string = std::str::from_utf8(payload).unwrap();
+
+        let juridisk_vurdering_result: JuridiskVurderingResult = serde_json::from_str(payload_json_string).unwrap();
+
+        println!("juridisk_vurdering_result is: {:?}", juridisk_vurdering_result);
+
         kafka_consumer.commit_message(&msg, rdkafka::consumer::CommitMode::Sync).unwrap();
-
-        /* TODO
-        let juridisk_vurdering_result: JuridiskVurderingResult =
-            serde_json::from_slice(payload).expect("failed to derser JSON to JuridiskVurderingResult");
-        println!("juridisk_vurdering_result is: {:?}", juridisk_vurdering_result)
-
-         */
     }
 }
 
@@ -70,7 +68,7 @@ pub struct JuridiskVurdering {
     pub(crate) versjonAvKode: String,
     pub(crate) fodselsnummer: String,
     pub(crate) juridiskHenvisning: JuridiskHenvisning,
-    pub(crate) sporing: HashMap<String, String>,
+    pub(crate) sporing: HashMap<String, Option<String>>,
     pub(crate) input: HashMap<String, String>,
     pub(crate) tidsstempel: Option<String>,
     pub(crate) utfall: JuridiskUtfall,
