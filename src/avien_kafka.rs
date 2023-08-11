@@ -60,8 +60,6 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         let juridisk_vurdering_result: JuridiskVurderingResult = serde_json::from_str(payload_as_json_string).unwrap();
         kafka_consumer.commit_message(&msg, rdkafka::consumer::CommitMode::Sync).unwrap();
 
-        println!("payload_as_json_string: {}", payload_as_json_string);
-
         for juridiske_vurderinger in juridisk_vurdering_result.juridiskeVurderinger {
             let juridisk_vurdering_kafka_message = JuridiskVurderingKafkaMessage {
                 id: Uuid::new_v4(),
@@ -98,6 +96,8 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
 
 fn map_to_sporing(sporing: HashMap<String, String>) -> HashMap<String, Vec<String>> {
     let mut sporing_hash_map = HashMap::new();
+
+    println!("sporing_hash_map: {:?}", sporing_hash_map);
 
     for key in sporing {
         let mut value: Vec<String> = Vec::new();
