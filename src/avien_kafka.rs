@@ -60,7 +60,7 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         let juridisk_vurdering_result: JuridiskVurderingResult = serde_json::from_str(payload_as_json_string).unwrap();
         kafka_consumer.commit_message(&msg, rdkafka::consumer::CommitMode::Sync).unwrap();
 
-        println!("payload_as_json_string: {}", payload_as_json_string)
+        println!("payload_as_json_string: {}", payload_as_json_string);
 
         for juridiske_vurderinger in juridisk_vurdering_result.juridiskeVurderinger {
             let juridisk_vurdering_kafka_message = JuridiskVurderingKafkaMessage {
