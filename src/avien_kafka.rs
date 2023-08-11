@@ -97,8 +97,6 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
 fn map_to_sporing(sporing: HashMap<String, String>) -> HashMap<String, Vec<String>> {
     let mut sporing_hash_map = HashMap::new();
 
-    println!("sporing: {:?}", sporing);
-
     for key in sporing {
         let mut value: Vec<String> = Vec::new();
         value.push(key.1.clone());
