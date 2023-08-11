@@ -1,10 +1,13 @@
 use std::collections::HashMap;
+use std::io::{Error, ErrorKind};
 use rdkafka::{ClientConfig, Message};
 use rdkafka::consumer::{BaseConsumer, Consumer};
 use rdkafka::producer::{BaseProducer, BaseRecord};
+
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;
 use uuid::{Uuid};
+use crate::avien_kafka::Lovverk::{FOLKETRYGDLOVEN, FORVALTNINGSLOVEN};
 use crate::environment_variables::EnvironmentVariables;
 
 pub fn avien_kafka(environment_variables: EnvironmentVariables) {
@@ -33,7 +36,7 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         .create()
         .expect("Failed to create Kafka consumer");
 
-    kafka_consumer.subscribe(intern_pik_topic.as_ref()).expect("We could not subscribe to the defined topic.");
+    kafka_consumer.subscribe(intern_pik_topic.as_ref()).expect("We could not subscribe to the topic");
 
     let kafka_producer: BaseProducer = ClientConfig::new()
         .set("bootstrap.servers", kafka_brokers)
@@ -60,22 +63,22 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         for juridiske_vurderinger in juridisk_vurdering_result.juridiskeVurderinger {
             let juridisk_vurdering_kafka_message = JuridiskVurderingKafkaMessage {
                 id: Uuid::new_v4(),
-                tidsstempel: juridiske_vurderinger.tidsstempel.unwrap(),
-                eventName: juridiske_vurderinger.eventName.unwrap(),
-                versjon: juridiske_vurderinger.versjon.unwrap(),
-                kilde: juridiske_vurderinger.kilde.unwrap(),
-                versjonAvKode: juridiske_vurderinger.versjonAvKode.unwrap(),
-                fodselsnummer: juridiske_vurderinger.fodselsnummer.unwrap(),
-                sporing: Default::default(),
-                lovverk: juridiske_vurderinger.fodselsnummer.unwrap(),
-                lovverksversjon: juridiske_vurderinger.lovverk.lovverksversjon.unwrap(),
-                paragraf: juridiske_vurderinger.paragraf.unwrap(),
-                ledd: juridiske_vurderinger.ledd.unwrap(),
-                punktum: juridiske_vurderinger.punktum.unwrap(),
-                bokstav: juridiske_vurderinger.bokstav.unwrap(),
+                tidsstempel: juridiske_vurderinger.tidsstempel,
+                eventName: juridiske_vurderinger.eventName,
+                versjon: juridiske_vurderinger.version,
+                kilde: juridiske_vurderinger.kilde,
+                versjonAvKode: juridiske_vurderinger.versjonAvKode,
+                fodselsnummer: juridiske_vurderinger.fodselsnummer,
+                sporing: map_to_sporing(juridiske_vurderinger.sporing),
+                lovverk: juridiske_vurderinger.juridiskHenvisning.lovverk.get_lovverk_kortnavn_kafka_message().unwrap().to_lowercase(),
+                lovverksversjon: juridiske_vurderinger.juridiskHenvisning.lovverk.get_lovverk_lovverksversjon_kafka_message().unwrap(),
+                paragraf: juridiske_vurderinger.juridiskHenvisning.paragraf,
+                ledd: juridiske_vurderinger.juridiskHenvisning.ledd,
+                punktum: juridiske_vurderinger.juridiskHenvisning.punktum,
+                bokstav: juridiske_vurderinger.juridiskHenvisning.bokstav,
                 input: juridiske_vurderinger.input,
                 output: None,
-                utfall: Utfall::VILKAR_OPPFYLT,
+                utfall: juridiske_vurderinger.utfall,
             };
 
             let juridisk_vurdering_kafka_message_json =
@@ -89,6 +92,19 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
             ).expect("Failed to send message");
         }
     }
+}
+
+fn map_to_sporing(sporing: HashMap<String, String>) -> HashMap<String, Vec<String>> {
+    let mut sporing_hash_map = HashMap::new();
+
+    for key in sporing {
+        let mut value: Vec<String> = Vec::new();
+        value.push(key.1);
+        sporing_hash_map.insert(key.0, value).unwrap();
+    }
+
+    return sporing_hash_map;
+
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -110,16 +126,7 @@ pub struct JuridiskVurderingKafkaMessage {
     pub(crate) bokstav: Option<String>,
     pub(crate) input: HashMap<String, Value>,
     pub(crate) output: Option<HashMap<String, Value>>,
-    pub(crate) utfall: Utfall,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[allow(non_camel_case_types)]
-pub enum Utfall {
-    VILKAR_OPPFYLT,
-    VILKAR_IKKE_OPPFYLT,
-    VILKAR_UAVKLART,
-    VILKAR_BEREGNET,
+    pub(crate) utfall: JuridiskUtfall,
 }
 
 
@@ -141,7 +148,7 @@ pub struct JuridiskVurdering {
     pub(crate) juridiskHenvisning: JuridiskHenvisning,
     pub(crate) sporing: HashMap<String, String>,
     pub(crate) input: HashMap<String, Value>,
-    pub(crate) tidsstempel: Option<String>,
+    pub(crate) tidsstempel: String,
     pub(crate) utfall: JuridiskUtfall,
 }
 
@@ -169,4 +176,30 @@ pub enum JuridiskUtfall {
 pub enum Lovverk {
     FOLKETRYGDLOVEN,
     FORVALTNINGSLOVEN,
+}
+
+
+impl Lovverk {
+    fn get_lovverk_kortnavn_kafka_message(&self) -> Result<String, Error> {
+        if let FOLKETRYGDLOVEN = self {
+            Ok("Folketrygdloven".to_string(),
+            )
+        } else if let FORVALTNINGSLOVEN = self {
+            Ok("Forvaltningsloven".to_string()
+            )
+        } else {
+            return Err(Error::new(ErrorKind::InvalidData, "Unknow lovverk enum"));
+        }
+    }
+
+    fn get_lovverk_lovverksversjon_kafka_message(&self) -> Result<String, Error> {
+        if let FOLKETRYGDLOVEN = self {
+            Ok("2022-01-01".to_string()
+            )
+        } else if let FORVALTNINGSLOVEN = self {
+            Ok("2022-01-01".to_string())
+        } else {
+            return Err(Error::new(ErrorKind::InvalidData, "Unknow lovverk enum"));
+        }
+    }
 }
