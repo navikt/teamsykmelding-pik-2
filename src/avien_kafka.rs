@@ -90,6 +90,9 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
                     .key(&[1, 2, 3, 4])
                     .payload(&juridisk_vurdering_kafka_message_json),
             ).expect("Failed to send message");
+
+            println!("Juridisk vurdering sendt to kafka topic");
+
         }
     }
 }
