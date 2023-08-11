@@ -102,7 +102,7 @@ fn map_to_sporing(sporing: HashMap<String, String>) -> HashMap<String, Vec<Strin
     for key in sporing {
         let mut value: Vec<String> = Vec::new();
         value.push(key.1.clone());
-        sporing_hash_map.insert(key.0.clone(), value).unwrap();
+        sporing_hash_map.insert(key.0.clone(), value);
     }
 
     return sporing_hash_map;
@@ -203,5 +203,20 @@ impl Lovverk {
         } else {
             return Err(Error::new(ErrorKind::InvalidData, "Unknow lovverk enum"));
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+    use crate::avien_kafka::map_to_sporing;
+
+    #[test]
+    fn test_map_to_sporing() {
+        let mut sporing: HashMap<String, String> = HashMap::new();
+        sporing.insert("sykmelding".to_string(), "12321-12313-123123".to_string());
+        let sporing_kafka: HashMap<String, Vec<String>> = map_to_sporing(sporing);
+
+        assert_eq!(sporing_kafka.values().len(), 1);
     }
 }
