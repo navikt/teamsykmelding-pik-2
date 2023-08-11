@@ -101,8 +101,8 @@ fn map_to_sporing(sporing: HashMap<String, String>) -> HashMap<String, Vec<Strin
 
     for key in sporing {
         let mut value: Vec<String> = Vec::new();
-        value.push(key.1);
-        sporing_hash_map.insert(key.0, value).unwrap();
+        value.push(key.1.clone());
+        sporing_hash_map.insert(key.0.clone(), value).unwrap();
     }
 
     return sporing_hash_map;
