@@ -63,7 +63,7 @@ Request to is_alive
 curl --location --request GET 'http://0.0.0.0:8080/internal/is_alive'
 ```
 
-Request to is_alive
+Request to is_ready
 ```bash script
 curl --location --request GET 'http://0.0.0.0:8080/internal/is_ready'
 ```
