@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
+use log::info;
 use rdkafka::{ClientConfig, Message};
 use rdkafka::consumer::{BaseConsumer, Consumer};
 use rdkafka::producer::{BaseProducer, BaseRecord};
@@ -59,7 +60,7 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         let payload_as_json_string = std::str::from_utf8(payload).unwrap();
         let juridisk_vurdering_result: JuridiskVurderingResult = serde_json::from_str(payload_as_json_string).unwrap();
         kafka_consumer.commit_message(&msg, rdkafka::consumer::CommitMode::Sync).unwrap();
-        println!("Consumed message from kafka topic");
+        info!("Consumed message from kafka topic");
 
         for juridiske_vurderinger in juridisk_vurdering_result.juridiskeVurderinger {
             let juridisk_vurdering_kafka_message = JuridiskVurderingKafkaMessage {
@@ -92,7 +93,7 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
                     .payload(&juridisk_vurdering_kafka_message_json),
             ).expect("Failed to send message");
 
-            println!("Produced message to kafka topic");
+            info!("Produced message to kafka topic");
 
         }
     }
