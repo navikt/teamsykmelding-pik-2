@@ -12,3 +12,5 @@ axum = "0.6.20"
 tokio = { version = "1.32.0", features = ["full"] }
 rdkafka = { version = "0.33.2", features = ["ssl"] }
 uuid = { version = "1.4.1", features = ["v4", "serde"] }
+log = "0.4.20"
+log4rs = { version = "1.2.0" }
