@@ -3,7 +3,7 @@ appenders:
   stdout:
     kind: console
     encoder:
-      pattern: "{h({d(%Y-%m-%d %H:%M:%S)(utc)} - {l}: {m}{n})}"
+      kind: json
 root:
   level: info
   appenders:

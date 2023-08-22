@@ -14,7 +14,6 @@ use tokio::task;
 async fn main() {
     log4rs::init_file("src/resources/log4rs.yaml", Default::default()).unwrap();
 
-    info!("booting up");
     let environment_variables = get_environment_variables();
 
     let application_state = ApplicationState {
