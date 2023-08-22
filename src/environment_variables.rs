@@ -38,3 +38,17 @@ pub struct EnvironmentVariables {
     pub(crate) kafka_private_key_path: String,
     pub(crate) hostname: String
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::environment_variables::get_environment_variables;
+
+    #[test]
+    fn test_get_environment_variables() {
+
+        let environment_variables = get_environment_variables();
+
+        assert_eq!(environment_variables.intern_pik_topic, "teamsykmelding.paragraf-i-kode");
+        assert_eq!(environment_variables.etterlevelse_topic, "flex.omrade-helse-etterlevelse");
+    }
+}
