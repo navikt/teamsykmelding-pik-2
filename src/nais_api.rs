@@ -2,7 +2,6 @@ use axum::{
     routing::get,
     http::StatusCode, Router,
 };
-use log::info;
 
 use crate::ApplicationState;
 
@@ -11,7 +10,6 @@ pub async fn register_nais_api(application_state: ApplicationState) {
         .route("/internal/is_alive", get(is_alive(application_state)))
         .route("/internal/is_ready", get(is_ready(application_state)));
 
-    info!("Server is starting up");
     axum::Server::bind(&"0.0.0.0:8080".parse().unwrap())
         .serve(app.into_make_service())
         .await
