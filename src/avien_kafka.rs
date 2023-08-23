@@ -41,11 +41,7 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
 
     let kafka_producer: BaseProducer = ClientConfig::new()
         .set("bootstrap.servers", kafka_brokers)
-        .set("group.id", application_name + "-producer")
         .set("client.id", kafka_client_id)
-        .set("session.timeout.ms", "6000")
-        .set("auto.offset.reset", "earliest")
-        .set("enable.auto.commit", "false")
         .set("security.protocol", "ssl")
         .set("ssl.key.location", kafka_private_key_path)
         .set("ssl.certificate.location", kafka_certificate_path)
