@@ -54,12 +54,12 @@ apt install libssl-dev
 #####  Create docker image of app
 Creating a docker image should be as simple as
 ``` bash
-docker build -t rustapp .
+docker build -t teamsykmelding-pik-2 .
 ```
 
 #### Running a docker image
 ``` bash
-docker run --rm -it -p 8080:8080 rustapp
+docker run --rm -it -p 8080:8080 teamsykmelding-pik-2
 ```
 
 ##### 🧪 Testing the applications endpoints

@@ -1,17 +1,11 @@
-# Use a rust image with the latest version of Rust installed
-FROM rust:1.71.1-bullseye
-
-# Set the working directory in the container
-WORKDIR /app
-
-# Copy the source code
+FROM clux/muslrust:stable as builder
+WORKDIR /build
 COPY . .
-
-# Build the Rust application
+ENV RUSTFLAGS='-C target-feature=+crt-static'
 RUN cargo build --release
 
-# Expose port 8080 in the container
+FROM gcr.io/distroless/static-debian11:nonroot
+WORKDIR /app
+COPY --from=builder /build/target/x86_64-unknown-linux-musl/release/teamsykmelding-pik-2 /app/teamsykmelding-pik-2
 EXPOSE 8080
-
-# Specify the command to run when the container starts
-CMD ["./target/release/teamsykmelding-pik-2"]
+CMD ["/app/teamsykmelding-pik-2"]

@@ -1,18 +1,20 @@
 mod environment_variables;
 mod avien_kafka;
 mod nais_api;
+mod log;
 
 
-use log::info;
+use ::log::info;
 use serde_derive::{Deserialize, Serialize};
 use crate::avien_kafka::avien_kafka;
 use crate::environment_variables::get_environment_variables;
 use crate::nais_api::register_nais_api;
 use tokio::task;
+use crate::log::init_log4rs;
 
 #[tokio::main]
 async fn main() {
-    log4rs::init_file("src/resources/log4rs.yaml", Default::default()).unwrap();
+    init_log4rs();
 
     let environment_variables = get_environment_variables();
 
