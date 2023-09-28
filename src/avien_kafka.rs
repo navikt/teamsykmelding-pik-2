@@ -8,7 +8,7 @@ use rdkafka::producer::{BaseProducer, BaseRecord};
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;
 use uuid::{Uuid};
-use crate::avien_kafka::Lovverk::{FOLKETRYGDLOVEN, FORVALTNINGSLOVEN};
+use crate::avien_kafka::Lovverk::{FOLKETRYGDLOVEN, FORVALTNINGSLOVEN, HELSEPERSONELLOVEN};
 use crate::environment_variables::EnvironmentVariables;
 
 pub fn avien_kafka(environment_variables: EnvironmentVariables) {
@@ -185,30 +185,27 @@ pub enum JuridiskUtfall {
 pub enum Lovverk {
     FOLKETRYGDLOVEN,
     FORVALTNINGSLOVEN,
+    HELSEPERSONELLOVEN,
 }
 
 
 impl Lovverk {
+
     fn get_lovverk_kortnavn_kafka_message(&self) -> Result<String, Error> {
-        if let FOLKETRYGDLOVEN = self {
-            Ok("Folketrygdloven".to_string(),
-            )
-        } else if let FORVALTNINGSLOVEN = self {
-            Ok("Forvaltningsloven".to_string()
-            )
-        } else {
-            return Err(Error::new(ErrorKind::InvalidData, "Unknow lovverk enum"));
+        match self {
+            FOLKETRYGDLOVEN => Ok("Folketrygdloven".to_string()),
+            FORVALTNINGSLOVEN => Ok("Forvaltningsloven".to_string()),
+            HELSEPERSONELLOVEN => Ok("Helsepersonelloven".to_string()),
+            _ => Err(Error::new(ErrorKind::InvalidData, "Unknow lovverk enum")),
         }
     }
 
     fn get_lovverk_lovverksversjon_kafka_message(&self) -> Result<String, Error> {
-        if let FOLKETRYGDLOVEN = self {
-            Ok("2022-01-01".to_string()
-            )
-        } else if let FORVALTNINGSLOVEN = self {
-            Ok("2022-01-01".to_string())
-        } else {
-            return Err(Error::new(ErrorKind::InvalidData, "Unknow lovverk enum"));
+        match self {
+            FOLKETRYGDLOVEN => Ok("2022-01-01".to_string()),
+            FORVALTNINGSLOVEN => Ok("2022-01-01".to_string()),
+            HELSEPERSONELLOVEN => Ok("2022-01-01".to_string()),
+            _ => Err(Error::new(ErrorKind::InvalidData, "Unknow lovverk enum")),
         }
     }
 }
