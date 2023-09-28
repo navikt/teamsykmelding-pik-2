@@ -14,4 +14,4 @@ rdkafka = { version = "0.34.0", features = ["ssl"] }
 uuid = { version = "1.4.1", features = ["v4", "serde"] }
 log = "0.4.20"
 log4rs = { version = "1.2.0", features = ["json_encoder"] }
-time = "0.3.28"
+time = "0.3.29"
