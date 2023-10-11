@@ -93,7 +93,7 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
 
             kafka_producer.send(
                 BaseRecord::to(etterlevelse_topic)
-                    .key(&[1, 2, 3, 4])
+                    .key(&juridisk_vurdering_kafka_message.clone().as_bytes())
                     .payload(&juridisk_vurdering_kafka_message_json),
             ).expect("Failed to send message");
 
