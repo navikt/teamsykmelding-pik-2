@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::io::{Error, ErrorKind};
+use std::io::{Error};
 use log::{info, warn};
 use rdkafka::{ClientConfig, Message};
 use rdkafka::consumer::{BaseConsumer, Consumer};
@@ -91,9 +91,11 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
                 serde_json::to_string_pretty(&juridisk_vurdering_kafka_message)
                     .expect("json serialization faileid");
 
+            let kafka_key: String = juridisk_vurdering_kafka_message.fodselsnummer.clone();
+
             kafka_producer.send(
                 BaseRecord::to(etterlevelse_topic)
-                    .key(&juridisk_vurdering_kafka_message.fodselsnummer.clone().as_bytes())
+                    .key(&kafka_key)
                     .payload(&juridisk_vurdering_kafka_message_json),
             ).expect("Failed to send message");
 
@@ -196,7 +198,6 @@ impl Lovverk {
             FOLKETRYGDLOVEN => Ok("Folketrygdloven".to_string()),
             FORVALTNINGSLOVEN => Ok("Forvaltningsloven".to_string()),
             HELSEPERSONELLOVEN => Ok("Helsepersonelloven".to_string()),
-            _ => Err(Error::new(ErrorKind::InvalidData, "Unknow lovverk enum")),
         }
     }
 
@@ -205,7 +206,6 @@ impl Lovverk {
             FOLKETRYGDLOVEN => Ok("2022-01-01".to_string()),
             FORVALTNINGSLOVEN => Ok("2022-01-01".to_string()),
             HELSEPERSONELLOVEN => Ok("2022-01-01".to_string()),
-            _ => Err(Error::new(ErrorKind::InvalidData, "Unknow lovverk enum")),
         }
     }
 }
