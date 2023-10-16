@@ -47,5 +47,6 @@ fn prometheus() -> (StatusCode, [(&'static str, &'static str); 1], String) {
 
     let output_string = String::from_utf8(buffer.clone()).unwrap();
 
-    (StatusCode::OK, [("content-type", "text/plain; version=0.0.4; charset=utf-8")], output_string)
+    (StatusCode::OK, [("content-type", "text/plain; version=0.0.4")], output_string)
 }
+

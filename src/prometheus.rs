@@ -1,6 +1,4 @@
-use prometheus::{self};
-
-use prometheus::{register_int_counter, IntCounter};
+use prometheus::{self ,register_int_counter, IntCounter};
 use lazy_static::lazy_static;
 
 lazy_static! {
