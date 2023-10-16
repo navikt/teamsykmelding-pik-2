@@ -2,6 +2,7 @@ mod environment_variables;
 mod avien_kafka;
 mod nais_api;
 mod log;
+mod prometheus;
 
 
 use ::log::info;
