@@ -10,6 +10,7 @@ use serde_json::Value;
 use uuid::{Uuid};
 use crate::avien_kafka::Lovverk::{FOLKETRYGDLOVEN, FORVALTNINGSLOVEN, HELSEPERSONELLOVEN};
 use crate::environment_variables::EnvironmentVariables;
+use crate::prometheus::PRODUCED_MGS;
 
 pub fn avien_kafka(environment_variables: EnvironmentVariables) {
     let intern_pik_topic: [&str; 1] = [environment_variables.intern_pik_topic];
@@ -98,6 +99,8 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
                     .key(&kafka_key)
                     .payload(&juridisk_vurdering_kafka_message_json),
             ).expect("Failed to send message");
+
+            PRODUCED_MGS.inc();
 
             info!("Produced message to kafka topic sporingsinfo: {:?}", juridisk_vurdering_kafka_message.sporing.clone());
 
