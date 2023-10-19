@@ -23,9 +23,6 @@ spec:
     initialDelay: 30
     periodSeconds: 5
     timeout: 5
-  prometheus:
-    enabled: true
-    path: /internal/prometheus
   resources:
     limits:
       memory: 1Gi
