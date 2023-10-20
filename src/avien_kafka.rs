@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 use std::io::{Error};
+use lazy_static::lazy_static;
 use log::{info, warn};
 use rdkafka::{ClientConfig, Message};
 use rdkafka::consumer::{BaseConsumer, Consumer};
 use rdkafka::producer::{BaseProducer, BaseRecord};
 
-use prometheus::{Opts, Registry, Counter, TextEncoder, Encoder};
+use prometheus::{register_int_counter, IntCounter, TextEncoder, Encoder};
 
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;
@@ -14,6 +15,12 @@ use crate::avien_kafka::Lovverk::{FOLKETRYGDLOVEN, FORVALTNINGSLOVEN, HELSEPERSO
 use crate::environment_variables::EnvironmentVariables;
 
 pub fn avien_kafka(environment_variables: EnvironmentVariables) {
+
+    lazy_static! {
+        static ref HIGH_FIVE_COUNTER: IntCounter =
+        register_int_counter!("highfives", "Number of high fives received").unwrap();
+    }
+
     let intern_pik_topic: [&str; 1] = [environment_variables.intern_pik_topic];
     let etterlevelse_topic: &str = environment_variables.etterlevelse_topic;
 
@@ -101,18 +108,11 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
                     .payload(&juridisk_vurdering_kafka_message_json),
             ).expect("Failed to send message");
 
-            // Create a Counter.
-            let counter_opts = Opts::new("test_counter", "test counter help");
-            let counter = Counter::with_opts(counter_opts).unwrap();
+            HIGH_FIVE_COUNTER.inc();
 
-            let r = Registry::new();
-            r.register(Box::new(counter.clone())).unwrap();
-
-            counter.inc();
-
-            let mut buffer = vec![];
+            let mut buffer = Vec::new();
             let encoder = TextEncoder::new();
-            let metric_families = r.gather();
+            let metric_families = prometheus::gather();
             encoder.encode(&metric_families, &mut buffer).unwrap();
 
             info!("Metric data: {:?}", String::from_utf8(buffer).unwrap());

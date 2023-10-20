@@ -1004,6 +1004,7 @@ name = "teamsykmelding-pik-2"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "lazy_static",
  "log",
  "log4rs",
  "openssl",
