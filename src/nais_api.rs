@@ -2,6 +2,7 @@ use axum::{
     routing::get,
     http::StatusCode, Router,
 };
+use log::info;
 use prometheus::{Encoder, TextEncoder};
 
 use crate::ApplicationState;
@@ -46,7 +47,9 @@ fn prometheus() -> (StatusCode, [(&'static str, &'static str); 1], String) {
     let metric_families = prometheus::gather();
     encoder.encode(&metric_families, &mut buffer).unwrap();
 
+    info!("Promoetheus data: {:?}", String::from_utf8(buffer).unwrap());
 
-    (StatusCode::OK, [("content-type", "text/plain; version=0.0.4")], String::from_utf8(buffer).unwrap())
+
+    (StatusCode::OK, [("content-type", "text/plain; version=0.0.4")], "# HELP highfives Number of high fives received\n# TYPE highfives counter\nhighfives 1\n".to_string())
 }
 
