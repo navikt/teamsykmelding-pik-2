@@ -5,6 +5,8 @@ use rdkafka::{ClientConfig, Message};
 use rdkafka::consumer::{BaseConsumer, Consumer};
 use rdkafka::producer::{BaseProducer, BaseRecord};
 
+use prometheus::{Opts, Registry, Counter, TextEncoder, Encoder};
+
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;
 use uuid::{Uuid};
@@ -99,6 +101,21 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
                     .payload(&juridisk_vurdering_kafka_message_json),
             ).expect("Failed to send message");
 
+            // Create a Counter.
+            let counter_opts = Opts::new("test_counter", "test counter help");
+            let counter = Counter::with_opts(counter_opts).unwrap();
+
+            let r = Registry::new();
+            r.register(Box::new(counter.clone())).unwrap();
+
+            counter.inc();
+
+            let mut buffer = vec![];
+            let encoder = TextEncoder::new();
+            let metric_families = r.gather();
+            encoder.encode(&metric_families, &mut buffer).unwrap();
+
+            info!("Metric data: {:?}", String::from_utf8(buffer).unwrap());
 
             info!("Produced message to kafka topic sporingsinfo: {:?}", juridisk_vurdering_kafka_message.sporing.clone());
 
@@ -210,6 +227,7 @@ impl Lovverk {
         }
     }
 }
+
 
 #[cfg(test)]
 mod tests {
