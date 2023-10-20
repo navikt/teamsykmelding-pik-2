@@ -101,7 +101,7 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
                     .payload(&juridisk_vurdering_kafka_message_json),
             ).expect("Failed to send message");
 
-            PRODUCED_MGS.inc();
+            //PRODUCED_MGS.inc();
 
             info!("Produced message to kafka topic sporingsinfo: {:?}", juridisk_vurdering_kafka_message.sporing.clone());
 

@@ -6,6 +6,7 @@ use log::info;
 use prometheus::{Encoder, TextEncoder};
 
 use crate::ApplicationState;
+use crate::metrics::PRODUCED_MGS;
 
 pub async fn register_nais_api(application_state: ApplicationState) {
     let app = Router::new()
@@ -41,6 +42,8 @@ fn is_ready(application_state: ApplicationState) -> (StatusCode, &'static str) {
 
 
 fn prometheus() -> (StatusCode, [(&'static str, &'static str); 1], String) {
+
+    PRODUCED_MGS.inc();
 
     let mut buffer = Vec::new();
     let encoder = TextEncoder::new();
