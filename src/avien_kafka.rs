@@ -10,8 +10,10 @@ use serde_json::Value;
 use uuid::{Uuid};
 use crate::avien_kafka::Lovverk::{FOLKETRYGDLOVEN, FORVALTNINGSLOVEN, HELSEPERSONELLOVEN};
 use crate::environment_variables::EnvironmentVariables;
+use crate::metrics::PRODUCED_MGS;
 
 pub fn avien_kafka(environment_variables: EnvironmentVariables) {
+
     let intern_pik_topic: [&str; 1] = [environment_variables.intern_pik_topic];
     let etterlevelse_topic: &str = environment_variables.etterlevelse_topic;
 
@@ -99,6 +101,7 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
                     .payload(&juridisk_vurdering_kafka_message_json),
             ).expect("Failed to send message");
 
+            PRODUCED_MGS.inc();
 
             info!("Produced message to kafka topic sporingsinfo: {:?}", juridisk_vurdering_kafka_message.sporing.clone());
 
@@ -210,6 +213,7 @@ impl Lovverk {
         }
     }
 }
+
 
 #[cfg(test)]
 mod tests {
