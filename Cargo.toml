@@ -11,7 +11,7 @@ openssl = "0.10.57"
 axum = "0.6.20"
 tokio = { version = "1.33.0", features = ["full"] }
 rdkafka = { version = "0.34.0", features = ["ssl"] }
-uuid = { version = "1.4.1", features = ["v4", "serde"] }
+uuid = { version = "1.5.0", features = ["v4", "serde"] }
 log = "0.4.20"
 log4rs = { version = "1.2.0", features = ["json_encoder"] }
 time = "0.3.30"
