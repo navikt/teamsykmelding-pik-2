@@ -3,7 +3,6 @@ use axum::{
     http::StatusCode, Router,
 };
 use axum::extract::State;
-use axum::handler::Handler;
 use prometheus::{Encoder, TextEncoder};
 
 use crate::ApplicationState;
