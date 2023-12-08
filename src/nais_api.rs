@@ -96,15 +96,15 @@ mod tests {
                 ready: false,
             }
         );
-        let client = TestServer::new(routes);
+        let server = TestServer::new(routes).unwrap();
 
         let dev_manifest = nais_manifest("naiserator-dev.yaml");
-        let dev_res = client.get(&dev_manifest.spec.liveness.path).send().await;
-        assert_eq!(dev_res.status(), StatusCode::OK);
+        let dev_res = server.get(&dev_manifest.spec.liveness.path).await;
+        assert_eq!(dev_res.status_code(), StatusCode::OK);
 
         let prod_manifest = nais_manifest("naiserator-prod.yaml");
-        let prod_res = client.get(&prod_manifest.spec.liveness.path).send().await;
-        assert_eq!(prod_res.status(), StatusCode::OK)
+        let prod_res = server.get(&prod_manifest.spec.liveness.path).await;
+        assert_eq!(prod_res.status_code(), StatusCode::OK)
     }
 
     #[tokio::test]
@@ -119,11 +119,11 @@ mod tests {
 
         let dev_manifest = nais_manifest("naiserator-dev.yaml");
         let dev_res: TestResponse = server.get(&dev_manifest.spec.liveness.path).await;
-        assert_eq!(dev_res.status(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert_eq!(dev_res.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
 
         let prod_manifest = nais_manifest("naiserator-prod.yaml");
         let prod_res = server.get(&prod_manifest.spec.liveness.path).await;
-        assert_eq!(prod_res.status(), StatusCode::INTERNAL_SERVER_ERROR)
+        assert_eq!(prod_res.status_code(), StatusCode::INTERNAL_SERVER_ERROR)
     }
 
     #[tokio::test]
@@ -138,11 +138,11 @@ mod tests {
 
         let dev_manifest = nais_manifest("naiserator-dev.yaml");
         let dev_res = server.get(&dev_manifest.spec.readiness.path).await;
-        assert_eq!(dev_res.status(), StatusCode::OK);
+        assert_eq!(dev_res.status_code(), StatusCode::OK);
 
         let prod_manifest = nais_manifest("naiserator-prod.yaml");
         let prod_res = server.get(&prod_manifest.spec.readiness.path).await;
-        assert_eq!(prod_res.status(), StatusCode::OK)
+        assert_eq!(prod_res.status_code(), StatusCode::OK)
     }
 
     #[tokio::test]
@@ -157,11 +157,11 @@ mod tests {
 
         let dev_manifest = nais_manifest("naiserator-dev.yaml");
         let dev_res = server.get(&dev_manifest.spec.readiness.path).await;
-        assert_eq!(dev_res.status(), StatusCode::INTERNAL_SERVER_ERROR);
+        assert_eq!(dev_res.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
 
         let prod_manifest = nais_manifest("naiserator-prod.yaml");
         let prod_res = server.get(&prod_manifest.spec.readiness.path).await;
-        assert_eq!(prod_res.status(), StatusCode::INTERNAL_SERVER_ERROR)
+        assert_eq!(prod_res.status_code(), StatusCode::INTERNAL_SERVER_ERROR)
     }
 
     #[tokio::test]
@@ -176,12 +176,12 @@ mod tests {
 
         let dev_manifest = nais_manifest("naiserator-dev.yaml");
         let dev_res = server.get(&dev_manifest.spec.prometheus.path).await;
-        assert_eq!(dev_res.status(), StatusCode::OK);
-        assert_eq!(dev_res.text().await, String::new());
+        assert_eq!(dev_res.status_code(), StatusCode::OK);
+        assert_eq!(dev_res.text().as_str(), String::new());
 
         let prod_manifest = nais_manifest("naiserator-prod.yaml");
         let prod_res = server.get(&prod_manifest.spec.prometheus.path).await;
-        assert_eq!(prod_res.status(), StatusCode::OK);
-        assert_eq!(prod_res.text().await, String::new());
+        assert_eq!(prod_res.status_code(), StatusCode::OK);
+        assert_eq!(prod_res.text().as_str(), String::new());
     }
 }
