@@ -3,17 +3,21 @@ use axum::{
     http::StatusCode, Router,
 };
 use axum::extract::State;
+use log::info;
 use prometheus::{Encoder, TextEncoder};
 
 use crate::ApplicationState;
 
 pub async fn register_nais_api(application_state: ApplicationState) {
-    let routes = nais_routes(application_state);
+    let app = nais_routes(application_state);
 
-    axum::Server::bind(&"0.0.0.0:8080".parse().unwrap())
-        .serve(routes.into_make_service())
-        .await
-        .unwrap();
+    let listener =
+        tokio::net::TcpListener::bind(&"0.0.0.0:8080").await.unwrap();
+
+    axum::serve(listener, app).await.unwrap();
+
+    info!("Server has started");
+
 }
 
 fn nais_routes(application_state: ApplicationState) -> Router {
@@ -56,10 +60,11 @@ async fn prometheus() -> (StatusCode, [(&'static str, &'static str); 1], String)
 #[cfg(test)]
 mod tests {
     use std::fs::read_to_string;
+    use axum::body::Body;
 
-    use axum::http::StatusCode;
-    use axum_test_helper::TestClient;
+    use axum::http::{Request, StatusCode};
     use serde_derive::{Deserialize, Serialize};
+    use tokio::net::TcpListener;
 
     use crate::ApplicationState;
     use crate::nais_api::nais_routes;
@@ -96,14 +101,48 @@ mod tests {
                 ready: false,
             }
         );
-        let client = TestClient::new(routes);
+
+        let listener = TcpListener::bind("0.0.0.0:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+
+        tokio::spawn(async move {
+            axum::serve(listener, routes).await.unwrap();
+        });
+
+        let client =
+            hyper_util::client::legacy::Client::builder(hyper_util::rt::TokioExecutor::new())
+                .build_http();
+
 
         let dev_manifest = nais_manifest("naiserator-dev.yaml");
-        let dev_res = client.get(&dev_manifest.spec.liveness.path).send().await;
+
+        let liveness_path_dev = dev_manifest.spec.liveness.path;
+
+        let dev_res = client.request(
+            Request::builder()
+                .uri(format!("http://{addr}{liveness_path_dev}"))
+                .header("Host", "localhost")
+                .body(Body::empty())
+                .unwrap(),
+        )
+            .await
+            .unwrap();
+
         assert_eq!(dev_res.status(), StatusCode::OK);
 
         let prod_manifest = nais_manifest("naiserator-prod.yaml");
-        let prod_res = client.get(&prod_manifest.spec.liveness.path).send().await;
+        let liveness_path_prod = prod_manifest.spec.liveness.path;
+
+
+        let prod_res = client.request(
+            Request::builder()
+                .uri(format!("http://{addr}{liveness_path_prod}"))
+                .header("Host", "localhost")
+                .body(Body::empty())
+                .unwrap(),
+        )
+            .await
+            .unwrap();
         assert_eq!(prod_res.status(), StatusCode::OK)
     }
 
@@ -115,14 +154,48 @@ mod tests {
                 ready: false,
             }
         );
-        let client = TestClient::new(routes);
+        let listener = TcpListener::bind("0.0.0.0:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+
+        tokio::spawn(async move {
+            axum::serve(listener, routes).await.unwrap();
+        });
+
+        let client =
+            hyper_util::client::legacy::Client::builder(hyper_util::rt::TokioExecutor::new())
+                .build_http();
+
 
         let dev_manifest = nais_manifest("naiserator-dev.yaml");
-        let dev_res = client.get(&dev_manifest.spec.liveness.path).send().await;
+
+        let liveness_path_dev = dev_manifest.spec.liveness.path;
+
+        let dev_res = client.request(
+            Request::builder()
+                .uri(format!("http://{addr}{liveness_path_dev}"))
+                .header("Host", "localhost")
+                .body(Body::empty())
+                .unwrap(),
+        )
+            .await
+            .unwrap();
+
         assert_eq!(dev_res.status(), StatusCode::INTERNAL_SERVER_ERROR);
 
         let prod_manifest = nais_manifest("naiserator-prod.yaml");
-        let prod_res = client.get(&prod_manifest.spec.liveness.path).send().await;
+
+        let liveness_path_prod = prod_manifest.spec.liveness.path;
+
+        let prod_res = client.request(
+            Request::builder()
+                .uri(format!("http://{addr}{liveness_path_prod}"))
+                .header("Host", "localhost")
+                .body(Body::empty())
+                .unwrap(),
+        )
+            .await
+            .unwrap();
+
         assert_eq!(prod_res.status(), StatusCode::INTERNAL_SERVER_ERROR)
     }
 
@@ -134,14 +207,50 @@ mod tests {
                 ready: true,
             }
         );
-        let client = TestClient::new(routes);
+
+        let listener = TcpListener::bind("0.0.0.0:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+
+        tokio::spawn(async move {
+            axum::serve(listener, routes).await.unwrap();
+        });
+
+        let client =
+            hyper_util::client::legacy::Client::builder(hyper_util::rt::TokioExecutor::new())
+                .build_http();
+
 
         let dev_manifest = nais_manifest("naiserator-dev.yaml");
-        let dev_res = client.get(&dev_manifest.spec.readiness.path).send().await;
+
+        let readiness_path_dev = dev_manifest.spec.readiness.path;
+
+        let dev_res = client.request(
+            Request::builder()
+                .uri(format!("http://{addr}{readiness_path_dev}"))
+                .header("Host", "localhost")
+                .body(Body::empty())
+                .unwrap(),
+        )
+            .await
+            .unwrap();
+
+
         assert_eq!(dev_res.status(), StatusCode::OK);
 
         let prod_manifest = nais_manifest("naiserator-prod.yaml");
-        let prod_res = client.get(&prod_manifest.spec.readiness.path).send().await;
+
+        let readiness_path_prod = prod_manifest.spec.readiness.path;
+
+        let prod_res = client.request(
+            Request::builder()
+                .uri(format!("http://{addr}{readiness_path_prod}"))
+                .header("Host", "localhost")
+                .body(Body::empty())
+                .unwrap(),
+        )
+            .await
+            .unwrap();
+
         assert_eq!(prod_res.status(), StatusCode::OK)
     }
 
@@ -153,14 +262,48 @@ mod tests {
                 ready: false,
             }
         );
-        let client = TestClient::new(routes);
+        let listener = TcpListener::bind("0.0.0.0:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+
+        tokio::spawn(async move {
+            axum::serve(listener, routes).await.unwrap();
+        });
+
+        let client =
+            hyper_util::client::legacy::Client::builder(hyper_util::rt::TokioExecutor::new())
+                .build_http();
 
         let dev_manifest = nais_manifest("naiserator-dev.yaml");
-        let dev_res = client.get(&dev_manifest.spec.readiness.path).send().await;
+
+        let readiness_path_dev = dev_manifest.spec.readiness.path;
+
+        let dev_res = client.request(
+            Request::builder()
+                .uri(format!("http://{addr}{readiness_path_dev}"))
+                .header("Host", "localhost")
+                .body(Body::empty())
+                .unwrap(),
+        )
+            .await
+            .unwrap();
+
+
         assert_eq!(dev_res.status(), StatusCode::INTERNAL_SERVER_ERROR);
 
         let prod_manifest = nais_manifest("naiserator-prod.yaml");
-        let prod_res = client.get(&prod_manifest.spec.readiness.path).send().await;
+
+        let readiness_path_prod = prod_manifest.spec.readiness.path;
+
+        let prod_res = client.request(
+            Request::builder()
+                .uri(format!("http://{addr}{readiness_path_prod}"))
+                .header("Host", "localhost")
+                .body(Body::empty())
+                .unwrap(),
+        )
+            .await
+            .unwrap();
+
         assert_eq!(prod_res.status(), StatusCode::INTERNAL_SERVER_ERROR)
     }
 
@@ -172,16 +315,49 @@ mod tests {
                 ready: true,
             }
         );
-        let client = TestClient::new(routes);
+        let listener = TcpListener::bind("0.0.0.0:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+
+        tokio::spawn(async move {
+            axum::serve(listener, routes).await.unwrap();
+        });
+
+        let client =
+            hyper_util::client::legacy::Client::builder(hyper_util::rt::TokioExecutor::new())
+                .build_http();
 
         let dev_manifest = nais_manifest("naiserator-dev.yaml");
-        let dev_res = client.get(&dev_manifest.spec.prometheus.path).send().await;
+
+        let prometheus_path_dev = dev_manifest.spec.prometheus.path;
+
+        let dev_res = client.request(
+            Request::builder()
+                .uri(format!("http://{addr}{prometheus_path_dev}"))
+                .header("Host", "localhost")
+                .body(Body::empty())
+                .unwrap(),
+        )
+            .await
+            .unwrap();
+
         assert_eq!(dev_res.status(), StatusCode::OK);
-        assert_eq!(dev_res.text().await, String::new());
+        assert_eq!(dev_res.body(), String::new());
 
         let prod_manifest = nais_manifest("naiserator-prod.yaml");
-        let prod_res = client.get(&prod_manifest.spec.prometheus.path).send().await;
+
+        let prometheus_path_prod = prod_manifest.spec.prometheus.path;
+
+        let prod_res = client.request(
+            Request::builder()
+                .uri(format!("http://{addr}{prometheus_path_prod}"))
+                .header("Host", "localhost")
+                .body(Body::empty())
+                .unwrap(),
+        )
+            .await
+            .unwrap();
+
         assert_eq!(prod_res.status(), StatusCode::OK);
-        assert_eq!(prod_res.text().await, String::new());
+        assert_eq!(prod_res.body(), String::new());
     }
 }
