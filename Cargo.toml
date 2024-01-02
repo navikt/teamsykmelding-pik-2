@@ -9,7 +9,7 @@ serde_json = "1.0.108"
 serde_derive = "1.0.183"
 openssl = "0.10.61"
 axum = "0.7.3"
-tokio = { version = "1.35.0", features = ["full"] }
+tokio = { version = "1.35.1", features = ["full"] }
 rdkafka = { version = "0.36.0", features = ["ssl"] }
 uuid = { version = "1.6.1", features = ["v4", "serde"] }
 log = "0.4.20"
