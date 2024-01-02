@@ -40,22 +40,31 @@ jobs:
       image: ${{ steps.docker-build-push.outputs.image }}
   build-dependabot:
     if: ${{ github.actor == 'dependabot[bot]' }}
-    name: Build for dependabot PR
+    name: Build
     runs-on: ubuntu-latest
+    permissions:
+      packages: "write"
+      contents: "read"
+      id-token: "write"
     steps:
-      - uses: navikt/teamsykmelding-github-actions-workflows/actions/yarn-cached@main
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/cache@v3
+        continue-on-error: false
         with:
-          NPM_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
-      - name: Copy appropriate env file to root
-        shell: bash
-        run: |
-          echo "Copying nais/envs/.env.prod..."
-          cp nais/envs/.env.prod .env.production
-      - id: yarn-build
-        shell: bash
-        run: yarn build
-        env:
-          NEXT_PUBLIC_VERSION: ${{ github.sha }}      
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: build
+        run: cargo build
+      - name: docker-build-push
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
+        with:
+          team: teamsykmelding
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}   
   deploy-dev:
     name: Deploy to dev-gcp
     runs-on: ubuntu-latest
