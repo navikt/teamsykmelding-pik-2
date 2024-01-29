@@ -20,4 +20,4 @@ lazy_static = "1.4.0"
 
 [dev-dependencies]
 axum-test = "14.0.0"
-serde_yaml = "0.9.29"
+serde_yaml = "0.9.31"
