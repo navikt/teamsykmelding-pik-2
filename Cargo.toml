@@ -19,5 +19,5 @@ prometheus = "0.13.3"
 lazy_static = "1.4.0"
 
 [dev-dependencies]
-axum-test = "14.0.0"
+axum-test = "14.7.0"
 serde_yaml = "0.9.29"
