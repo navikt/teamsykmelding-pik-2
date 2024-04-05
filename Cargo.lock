@@ -360,9 +360,9 @@ checksum = "6fb8d784f27acf97159b40fc4db5ecd8aa23b9ad5ef69cdd136d3bc80665f0c0"
 
 [[package]]
 name = "h2"
-version = "0.4.0"
+version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e1d308f63daf4181410c242d34c11f928dcb3aa105852019e043c9d1f4e4368a"
+checksum = "816ec7294445779408f36fe57bc5b7fc1cf59664059096c65f905c1c61f58069"
 dependencies = [
  "bytes",
  "fnv",
@@ -1156,8 +1156,8 @@ dependencies = [
  "serde",
  "serde_derive",
  "serde_json",
- "time 0.3.31",
  "serde_yaml 0.9.29",
+ "time 0.3.31",
  "tokio",
  "uuid",
 ]
