@@ -29,8 +29,6 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: build
         run: cargo build --release
-        env:
-          RUSTFLAGS: '-C target-feature=+crt-static'
       - name: docker-build-push
         uses: nais/docker-build-push@v0
         id: docker-build-push
