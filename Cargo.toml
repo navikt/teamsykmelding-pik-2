@@ -15,7 +15,7 @@ uuid = { version = "1.6.1", features = ["v4", "serde"] }
 log = "0.4.20"
 log4rs = { version = "1.2.0", features = ["json_encoder"] }
 time = "0.3.31"
-prometheus = "0.13.3"
+prometheus = "0.13.4"
 lazy_static = "1.4.0"
 
 [dev-dependencies]
