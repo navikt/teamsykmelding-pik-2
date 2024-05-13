@@ -4,13 +4,13 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-serde = "1.0.193"
+serde = "1.0.197"
 serde_json = "1.0.108"
 serde_derive = "1.0.183"
 openssl = "0.10.62"
 axum = "0.7.3"
 tokio = { version = "1.35.1", features = ["full"] }
-rdkafka = { version = "0.36.0", features = ["ssl"] }
+rdkafka = { version = "0.36.2", features = ["ssl"] }
 uuid = { version = "1.6.1", features = ["v4", "serde"] }
 log = "0.4.20"
 log4rs = { version = "1.2.0", features = ["json_encoder"] }
@@ -19,5 +19,5 @@ prometheus = "0.13.3"
 lazy_static = "1.4.0"
 
 [dev-dependencies]
-axum-test = "14.0.0"
-serde_yaml = "0.9.29"
+axum-test = "14.7.0"
+serde_yaml = "0.9.32"
