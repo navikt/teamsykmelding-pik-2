@@ -85,7 +85,7 @@ mod tests {
         let dir = std::env::current_dir().unwrap();
         let path = dir.join(filename);
         let content = read_to_string(path.to_str().unwrap()).unwrap();
-        serde_yaml::from_str(&content).unwrap()
+        serde_yml::from_str(&content).unwrap()
     }
 
     #[tokio::test]
