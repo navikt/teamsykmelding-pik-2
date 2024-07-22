@@ -7,7 +7,7 @@ edition = "2021"
 serde = "1.0.203"
 serde_json = "1.0.117"
 serde_derive = "1.0.201"
-openssl = "0.10.64"
+openssl = "0.10.66"
 axum = "0.7.5"
 tokio = { version = "1.38.0", features = ["full"] }
 rdkafka = { version = "0.36.2", features = ["ssl"] }
