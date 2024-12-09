@@ -14,7 +14,7 @@ rdkafka = { version = "0.37.0", features = ["ssl"] }
 uuid = { version = "1.11.0", features = ["v4", "serde"] }
 log = "0.4.22"
 log4rs = { version = "1.3.0", features = ["json_encoder"] }
-time = "0.3.36"
+time = "0.3.37"
 prometheus = "0.13.4"
 lazy_static = "1.5.0"
 
