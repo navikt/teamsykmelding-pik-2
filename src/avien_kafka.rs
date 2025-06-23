@@ -1,9 +1,10 @@
 use std::collections::HashMap;
-use std::io::{Error};
-use log::{info, warn};
+use std::time::Duration;
+use std::io::{Error, ErrorKind};
+use log::{info, warn, error};
 use rdkafka::{ClientConfig, Message};
 use rdkafka::consumer::{BaseConsumer, Consumer};
-use rdkafka::producer::{BaseProducer, BaseRecord};
+use rdkafka::producer::{FutureProducer, FutureRecord};
 
 use serde_derive::{Deserialize, Serialize};
 use serde_json::Value;
@@ -12,7 +13,7 @@ use crate::avien_kafka::Lovverk::{FOLKETRYGDLOVEN, FORVALTNINGSLOVEN, HELSEPERSO
 use crate::environment_variables::EnvironmentVariables;
 use crate::metrics::PRODUCED_MGS;
 
-pub fn avien_kafka(environment_variables: EnvironmentVariables) {
+pub async fn avien_kafka(environment_variables: EnvironmentVariables) {
 
     let intern_pik_topic: [&str; 1] = [environment_variables.intern_pik_topic];
     let etterlevelse_topic: &str = environment_variables.etterlevelse_topic;
@@ -36,12 +37,13 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
         .set("ssl.key.location", kafka_private_key_path.clone())
         .set("ssl.certificate.location", kafka_certificate_path.clone())
         .set("ssl.ca.location", kafka_ca_path.clone())
+        .set("acks", "all")
         .create()
         .expect("Failed to create Kafka consumer");
 
     kafka_consumer.subscribe(intern_pik_topic.as_ref()).expect("We could not subscribe to the topic");
 
-    let kafka_producer: BaseProducer = ClientConfig::new()
+    let kafka_producer: FutureProducer = ClientConfig::new()
         .set("bootstrap.servers", kafka_brokers)
         .set("client.id", kafka_client_id)
         .set("security.protocol", "ssl")
@@ -95,16 +97,24 @@ pub fn avien_kafka(environment_variables: EnvironmentVariables) {
 
             let kafka_key: String = juridisk_vurdering_kafka_message.fodselsnummer.clone();
 
-            kafka_producer.send(
-                BaseRecord::to(etterlevelse_topic)
+            let res = kafka_producer.send(
+                FutureRecord::to(etterlevelse_topic)
                     .key(&kafka_key)
                     .payload(&juridisk_vurdering_kafka_message_json),
-            ).expect("Failed to send message");
+                Duration::from_secs(30), // <-- Required timeout
+            ).await;
 
             PRODUCED_MGS.inc();
 
-            info!("Produced message to kafka topic sporingsinfo: {:?}", juridisk_vurdering_kafka_message.sporing.clone());
-
+            match res {
+                Ok((partition, offset)) => {
+                    info!("Produced message to kafka topic sporingsinfo: {:?}", juridisk_vurdering_kafka_message.sporing.clone());
+                }
+                Err((err, _message)) => {
+                    error!("Delivery failed: restarting app, sporintsinfo: {:?}", juridisk_vurdering_kafka_message.sporing.clone());
+                    panic!("Failed to send message, restaring app")
+                }
+            }
         }
     }
 }
@@ -202,6 +212,7 @@ impl Lovverk {
             FOLKETRYGDLOVEN => Ok("Folketrygdloven".to_string()),
             FORVALTNINGSLOVEN => Ok("Forvaltningsloven".to_string()),
             HELSEPERSONELLOVEN => Ok("Helsepersonelloven".to_string()),
+            _ => Err(Error::new(ErrorKind::InvalidData, "Unknow lovverk enum")),
         }
     }
 
@@ -210,10 +221,10 @@ impl Lovverk {
             FOLKETRYGDLOVEN => Ok("2022-01-01".to_string()),
             FORVALTNINGSLOVEN => Ok("2022-01-01".to_string()),
             HELSEPERSONELLOVEN => Ok("2022-01-01".to_string()),
+            _ => Err(Error::new(ErrorKind::InvalidData, "Unknow lovverk enum")),
         }
     }
 }
-
 
 #[cfg(test)]
 mod tests {
